@@ -49,11 +49,12 @@ export const U256_LIMBS = 3;
 export const U256_LIMB_SIZE = 120;
 
 export function toNoirU256(value: bigint) {
-  assert(value >= 0n && value < 2n ** 256n, "invalid U256 value");
-  const limbs = splitBigIntToLimbs(value, U256_LIMB_SIZE, U256_LIMBS).map(
-    (x) => "0x" + x.toString(16),
-  );
-  return { limbs };
+  return { value: value.toString() };
+  // assert(value >= 0n && value < 2n ** 256n, "invalid U256 value");
+  // const limbs = splitBigIntToLimbs(value, U256_LIMB_SIZE, U256_LIMBS).map(
+  //   (x) => "0x" + x.toString(16),
+  // );
+  // return { limbs };
 }
 
 export function fromNoirU256(value: { limbs: (bigint | string)[] }) {
@@ -77,6 +78,19 @@ export async function prove(
   console.timeEnd(`${name} generateProof`);
   proof = proof.slice(4); // remove length
   return { proof, witness, returnValue, publicInputs };
+}
+
+export function promiseWithResolvers<T>(): {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (reason: unknown) => void;
+} {
+  const ret: any = {};
+  ret.promise = new Promise((resolve, reject) => {
+    ret.resolve = resolve;
+    ret.reject = reject;
+  });
+  return ret;
 }
 
 export function decodeNativeHonkProof(nativeProof: Uint8Array) {
